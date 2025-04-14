@@ -1,9 +1,10 @@
 
 import { useState } from "react";
+import { motion } from "framer-motion";
 
 export default function Portfolio() {
   const [activeTab, setActiveTab] = useState("all");
-  
+
   const categories = [
     { id: "all", label: "All Projects" },
     { id: "web", label: "Web Design" },
@@ -11,7 +12,7 @@ export default function Portfolio() {
     { id: "marketing", label: "Marketing" },
     { id: "ui", label: "UI/UX Design" },
   ];
-  
+
   const projects = [
     {
       title: "Eco Lifestyle Branding",
@@ -55,25 +56,63 @@ export default function Portfolio() {
     ? projects 
     : projects.filter(project => project.category === activeTab);
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const projectVariants = {
+    hidden: { 
+      opacity: 0,
+      y: 20
+    },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.6,
+        ease: [0.6, -0.05, 0.01, 0.99]
+      }
+    }
+  };
+
   return (
     <section id="portfolio" className="py-24">
-      <div className="container mx-auto px-4 md:px-6">
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <span className="inline-block px-3 py-1 text-sm font-medium bg-ninja-purple/10 text-ninja-purple rounded-full mb-4">
+      <motion.div 
+        className="container mx-auto px-4 md:px-6"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+      >
+        <motion.div 
+          className="text-center max-w-3xl mx-auto mb-16"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+        >
+          <motion.span 
+            className="inline-block px-3 py-1 text-sm font-medium bg-ninja-purple/10 text-ninja-purple rounded-full mb-4"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
             Our Work
-          </span>
+          </motion.span>
           <h2 className="text-3xl md:text-4xl font-bold font-display mb-6">
             Showcasing our creative excellence
           </h2>
           <p className="text-gray-600">
             Browse through our collection of projects that demonstrate our expertise, creativity, and dedication to delivering exceptional results.
           </p>
-        </div>
+        </motion.div>
 
-        {/* Portfolio Filter */}
         <div className="flex flex-wrap justify-center gap-3 mb-12">
-          {categories.map((category) => (
-            <button
+          {categories.map((category, index) => (
+            <motion.button
               key={category.id}
               onClick={() => setActiveTab(category.id)}
               className={`px-5 py-2 rounded-full text-sm transition-all duration-300 ${
@@ -81,56 +120,89 @@ export default function Portfolio() {
                   ? "bg-ninja-purple text-white"
                   : "bg-gray-100 text-gray-700 hover:bg-gray-200"
               }`}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.1 * index }}
             >
               {category.label}
-            </button>
+            </motion.button>
           ))}
         </div>
 
-        {/* Portfolio Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+        <motion.div 
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8"
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+        >
           {filteredProjects.map((project, index) => (
-            <div 
+            <motion.div 
               key={index} 
-              className="group relative overflow-hidden rounded-2xl cursor-pointer h-[350px] animate-fade-in"
-              style={{ animationDelay: `${index * 100}ms` }}
+              className="group relative overflow-hidden rounded-2xl cursor-pointer h-[350px]"
+              variants={projectVariants}
+              whileHover={{ y: -10 }}
             >
-              {/* Project Image (Placeholder) */}
-              <div className={`absolute inset-0 ${project.image} group-hover:scale-105 transition-transform duration-500`}></div>
+              <motion.div 
+                className={`absolute inset-0 ${project.image}`}
+                whileHover={{ scale: 1.05 }}
+                transition={{ duration: 0.6 }}
+              />
               
-              {/* Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <motion.div 
+                className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/50 to-transparent"
+                initial={{ opacity: 0 }}
+                whileHover={{ opacity: 1 }}
+                transition={{ duration: 0.3 }}
+              />
               
-              {/* Project Info */}
-              <div className="absolute bottom-0 left-0 right-0 p-6 transform translate-y-4 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300">
+              <motion.div 
+                className="absolute bottom-0 left-0 right-0 p-6"
+                initial={{ opacity: 0, y: 20 }}
+                whileHover={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+              >
                 <span className="inline-block px-3 py-1 text-xs font-medium bg-white/20 text-white rounded-full mb-3">
                   {categories.find(cat => cat.id === project.category)?.label}
                 </span>
-                <h3 className="text-xl font-bold text-white mb-2 font-display">{project.title}</h3>
+                <h3 className="text-xl font-bold text-white mb-2 font-display">
+                  {project.title}
+                </h3>
                 <p className="text-white/80 mb-4">Client: {project.client}</p>
-                <button className="inline-flex items-center text-white font-medium text-sm gap-1 group-hover:gap-2 transition-all duration-300">
+                <motion.button 
+                  className="inline-flex items-center text-white font-medium text-sm gap-2"
+                  whileHover={{ x: 5 }}
+                >
                   View Project
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-4 h-4">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                   </svg>
-                </button>
-              </div>
-            </div>
+                </motion.button>
+              </motion.div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
         
-        <div className="mt-16 text-center">
-          <a 
+        <motion.div 
+          className="mt-16 text-center"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+        >
+          <motion.a 
             href="/portfolio" 
             className="inline-flex items-center border border-ninja-purple text-ninja-purple hover:bg-ninja-purple hover:text-white px-8 py-3 rounded-full transition-all duration-300 font-medium"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
             <span>View All Projects</span>
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-5 h-5 ml-2">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
             </svg>
-          </a>
-        </div>
-      </div>
+          </motion.a>
+        </motion.div>
+      </motion.div>
     </section>
   );
 }

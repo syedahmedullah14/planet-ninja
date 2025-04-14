@@ -1,4 +1,8 @@
 
+import { motion } from "framer-motion";
+import { useInView } from "framer-motion";
+import { useRef } from "react";
+
 export default function Services() {
   const services = [
     {
@@ -57,54 +61,159 @@ export default function Services() {
     }
   ];
 
+  const containerRef = useRef(null);
+  const isInView = useInView(containerRef, { once: true });
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { 
+      opacity: 0,
+      y: 20,
+      scale: 0.95
+    },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: {
+        type: "spring",
+        stiffness: 100,
+        damping: 15
+      }
+    }
+  };
+
+  const cardHoverVariants = {
+    hover: {
+      y: -10,
+      scale: 1.02,
+      transition: {
+        type: "spring",
+        stiffness: 400,
+        damping: 10
+      }
+    }
+  };
+
   return (
-    <section id="services" className="py-20 bg-gray-50">
-      <div className="container mx-auto px-4 md:px-6">
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <span className="inline-block px-3 py-1 text-sm font-medium bg-ninja-purple/10 text-ninja-purple rounded-full mb-4">
+    <section id="services" className="py-24 relative overflow-hidden">
+      {/* Animated background elements */}
+      <motion.div 
+        className="absolute top-0 left-0 w-full h-full -z-10"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1 }}
+      >
+        <div className="absolute top-1/4 right-1/4 w-64 h-64 rounded-full bg-ninja-purple/10 blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-1/3 left-1/4 w-96 h-96 rounded-full bg-ninja-light-purple/5 blur-3xl animate-pulse"></div>
+      </motion.div>
+
+      <div className="container mx-auto px-4 md:px-6" ref={containerRef}>
+        <motion.div 
+          className="text-center max-w-3xl mx-auto mb-16"
+          initial={{ opacity: 0, y: 20 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+          transition={{ duration: 0.6 }}
+        >
+          <motion.span 
+            className="inline-block px-3 py-1 text-sm font-medium bg-ninja-purple/10 text-ninja-purple rounded-full mb-4"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
             Our Services
-          </span>
-          <h2 className="text-3xl md:text-4xl font-bold font-display mb-6">
+          </motion.span>
+          <motion.h2 
+            className="text-3xl md:text-4xl font-bold font-display mb-6"
+            initial={{ opacity: 0, y: 20 }}
+            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
             Transforming ideas into digital realities
-          </h2>
-          <p className="text-gray-600">
+          </motion.h2>
+          <motion.p 
+            className="text-gray-600"
+            initial={{ opacity: 0, y: 20 }}
+            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+          >
             We offer a comprehensive range of digital services to help your business thrive in the online world.
             Our expert team delivers tailored solutions that drive results.
-          </p>
-        </div>
+          </motion.p>
+        </motion.div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <motion.div 
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+          variants={containerVariants}
+          initial="hidden"
+          animate={isInView ? "visible" : "hidden"}
+        >
           {services.map((service, index) => (
-            <div 
-              key={index} 
-              className="bg-white p-8 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 group hover:border-ninja-purple border border-transparent cursor-pointer"
+            <motion.div 
+              key={index}
+              variants={itemVariants}
+              whileHover="hover"
+              custom={index}
+              className="group relative"
             >
-              <div className="mb-6 w-14 h-14 rounded-full bg-ninja-purple/10 flex items-center justify-center text-ninja-purple group-hover:bg-ninja-purple group-hover:text-white transition-all duration-300">
-                {service.icon}
-              </div>
-              <h3 className="text-xl font-semibold mb-4 font-display">{service.title}</h3>
-              <p className="text-gray-600">{service.description}</p>
-              <div className="mt-6 flex items-center text-ninja-purple">
-                <span className="font-medium">Learn more</span>
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform duration-300">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </div>
-            </div>
+              <motion.div 
+                className="bg-white p-8 rounded-2xl shadow-sm border border-transparent hover:border-ninja-purple transition-all duration-300"
+                variants={cardHoverVariants}
+              >
+                <motion.div 
+                  className="mb-6 w-14 h-14 rounded-full bg-ninja-purple/10 flex items-center justify-center text-ninja-purple group-hover:bg-ninja-purple group-hover:text-white transition-all duration-300"
+                  whileHover={{ rotate: 360 }}
+                  transition={{ duration: 0.5 }}
+                >
+                  {service.icon}
+                </motion.div>
+                <h3 className="text-xl font-semibold mb-4 font-display group-hover:text-ninja-purple transition-colors duration-300">
+                  {service.title}
+                </h3>
+                <p className="text-gray-600 group-hover:text-gray-700 transition-colors duration-300">
+                  {service.description}
+                </p>
+                <motion.div 
+                  className="mt-6 flex items-center text-ninja-purple font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                  initial={{ x: -10 }}
+                  whileHover={{ x: 0 }}
+                >
+                  Learn more
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform duration-300">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </motion.div>
+              </motion.div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
         
-        <div className="mt-16 text-center">
-          <a 
+        <motion.div 
+          className="mt-16 text-center"
+          initial={{ opacity: 0, y: 20 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+        >
+          <motion.a 
             href="#contact" 
             className="inline-flex items-center bg-ninja-purple hover:bg-ninja-purple/90 text-white px-8 py-3 rounded-full transition-all duration-300 font-medium"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
             <span>Get Started</span>
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-5 h-5 ml-2">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
             </svg>
-          </a>
-        </div>
+          </motion.a>
+        </motion.div>
       </div>
     </section>
   );
